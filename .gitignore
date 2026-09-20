@@ -1,0 +1,10 @@
+# Every subdirectory here is its own git repository -- plus target/, scratch/
+# and editor state. Tracking any of them would embed a repo inside this one,
+# which is the hazard behind the old "do not git init here" rule. Ignoring all
+# subdirectories by glob rather than by name means adding a crate needs no edit
+# here, and a new crate can never be swallowed by accident.
+/*/
+
+# ...except the workspace's own cargo config, which is part of what this repo
+# exists to version.
+!/.cargo/

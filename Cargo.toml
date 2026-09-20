@@ -1,0 +1,48 @@
+[workspace]
+resolver = "2"
+members = [
+    "cce-ui",
+    "cce-layout-interface",
+    "cce-screenaver",
+    "cce-authenticator",
+    "cce-fonts",
+    "cce-system-interface",
+    "cce-compositor",
+    "cce-status-interface",
+    "cce-mail",
+    "cce-display-manager",
+    "cce-designer",
+    "cce-color-editor",
+    "cce-cloud",
+    "cce-text-editor",
+    "cce-gallery",
+    "cce-notifier",
+    "cce-files",
+    "cce-graph",
+    "cce-grid",
+    "cce-map",
+    "cce-calendar",
+    "cce-preview",
+    "cce-terminal",
+    "cce-browser",
+    "cce-data-editor",
+    "cce-remote",
+    "cce-secrets",
+    "cce-list",
+    "cce-window-manager",
+    "cce-lock",
+]
+
+# Every app declares cce-ui (and cce-compositor also cce-window-manager) as a git
+# dependency so a standalone clone of one app resolves without sibling
+# checkouts -- that is what makes a single app installable on its own. Inside
+# this workspace those git sources are redirected back to the local crates, so
+# workspace builds compile the working tree and cross-crate edits stay live.
+# The pinned revs only affect builds that happen outside this workspace, which
+# means they can go stale without any build here failing: after pushing cce-ui
+# or cce-window-manager, bump the rev in the crates that depend on them.
+[patch."https://git.lucas.co/cce-ui.git"]
+cce-ui = { path = "cce-ui" }
+
+[patch."https://git.lucas.co/cce-window-manager.git"]
+cce-window-manager = { path = "cce-window-manager" }
