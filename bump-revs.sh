@@ -15,27 +15,26 @@
 #
 # With no dep named, every dependency that appears in a git pin is considered.
 #
-# WHAT IT PINS TO: the BARE repo's HEAD under ~/git -- not the work tree's. A
-# rev that exists only in a work tree is fetchable by nobody, so pinning it
-# would write manifests that resolve on this machine and nowhere else. If a
-# dependency has unpushed commits or uncommitted changes, that is reported and
-# the run fails rather than pinning something stale; push it first. A bare repo
-# ahead of its work tree is fine and is pinned as-is -- it is what others can
-# actually fetch.
+# WHAT IT PINS TO: the head of the dependency's branch on its `origin` remote
+# (GitHub, since 2026-09-20 -- the bare repos under ~/git are gone) -- not the
+# work tree's HEAD. A rev that exists only in a work tree is fetchable by
+# nobody, so pinning it would write manifests that resolve on this machine and
+# nowhere else. If the dependency's work tree has uncommitted changes or
+# commits not yet on origin, that is reported and the run fails rather than
+# pinning something stale; push it first (the post-commit hook normally has).
+# An origin ahead of the work tree is fine and is pinned as-is -- it is what
+# others can actually fetch.
 #
-# git.lucas.co lags the bare repos by up to an hour (gitsite.timer), so a rev
+# The pins themselves name git.lucas.co, which mirrors GitHub hourly, so a rev
 # pinned immediately after a push is correct but not yet fetchable from the
 # site. That resolves itself and is not an error.
 #
 # A manifest that should have changed but did not fails the run. Silently
 # skipping is what let 21 repos sit unpushed for a day; the same rule applies
 # here.
-#
-#   env: GIT_BARE_ROOT (default ~/git)
 
 set -eu
 
-BARE_ROOT="${GIT_BARE_ROOT:-$HOME/git}"
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 DRY=""
 COMMIT=""
@@ -88,23 +87,35 @@ fi
 TARGETS=""
 BLOCKED=""
 for dep in $DEPS; do
-    bare="$BARE_ROOT/$dep.git"
-    [ -d "$bare" ] || { say "!! $dep: no bare repo at $bare"; BLOCKED="$BLOCKED $dep"; continue; }
-    new=$(git -C "$bare" rev-parse HEAD 2>/dev/null) || {
-        say "!! $dep: bare repo has no HEAD commit"; BLOCKED="$BLOCKED $dep"; continue; }
-
     wt="$ROOT/$dep"
-    if [ -d "$wt/.git" ]; then
-        if [ -n "$(git -C "$wt" status --porcelain)" ]; then
-            say "!! $dep: uncommitted changes -- commit and push before pinning"
-            BLOCKED="$BLOCKED $dep"; continue
-        fi
-        wt_head=$(git -C "$wt" rev-parse HEAD)
-        if [ "$wt_head" != "$new" ] && git -C "$wt" merge-base --is-ancestor "$new" "$wt_head" 2>/dev/null; then
+    [ -d "$wt/.git" ] || { say "!! $dep: no work tree at $wt"; BLOCKED="$BLOCKED $dep"; continue; }
+    branch=$(git -C "$wt" symbolic-ref --quiet --short HEAD) || {
+        say "!! $dep: detached HEAD -- check out its branch first"; BLOCKED="$BLOCKED $dep"; continue; }
+    url=$(git -C "$wt" remote get-url origin 2>/dev/null) || {
+        say "!! $dep: no origin remote"; BLOCKED="$BLOCKED $dep"; continue; }
+    # Asked of the remote itself, not a possibly stale remote-tracking ref:
+    # what others can fetch is what origin has right now.
+    new=$(git -C "$wt" ls-remote --quiet "$url" "refs/heads/$branch" 2>/dev/null | cut -f1)
+    [ -n "$new" ] || {
+        say "!! $dep: origin ($url) has no branch $branch -- push it first"; BLOCKED="$BLOCKED $dep"; continue; }
+
+    if [ -n "$(git -C "$wt" status --porcelain --untracked-files=no)" ]; then
+        say "!! $dep: uncommitted changes -- commit and push before pinning"
+        BLOCKED="$BLOCKED $dep"; continue
+    fi
+    wt_head=$(git -C "$wt" rev-parse HEAD)
+    if [ "$wt_head" != "$new" ]; then
+        # Make sure the local history knows the remote rev before comparing;
+        # a fetch is cheap and the ancestor test is meaningless without it.
+        git -C "$wt" fetch --quiet "$url" "refs/heads/$branch" 2>/dev/null || true
+        if git -C "$wt" merge-base --is-ancestor "$new" "$wt_head" 2>/dev/null; then
             ahead=$(git -C "$wt" rev-list --count "$new..$wt_head")
-            say "!! $dep: work tree is $ahead commit(s) ahead of $bare"
+            say "!! $dep: work tree is $ahead commit(s) ahead of origin/$branch"
             say "     push it first, or the pin misses that work:"
-            say "     git -C $wt push origin \$(git -C $wt symbolic-ref --short HEAD)"
+            say "     git -C $wt push origin $branch"
+            BLOCKED="$BLOCKED $dep"; continue
+        elif ! git -C "$wt" merge-base --is-ancestor "$wt_head" "$new" 2>/dev/null; then
+            say "!! $dep: work tree and origin/$branch have diverged -- reconcile first"
             BLOCKED="$BLOCKED $dep"; continue
         fi
     fi
@@ -178,8 +189,8 @@ cloned on its own, so a stale pin never fails a build here. Bumped by
 bump-revs.sh after the dependency was pushed." ) && say "    $crate"
     done
     say ""
-    say "committed, not published -- push when ready:"
-    say "    git-bare-sync.sh"
+    say "committed -- each crate's post-commit hook pushes it to origin (GitHub);"
+    say "a crate without the hook still needs: git -C <crate> push origin <branch>"
 else
     say "review, then commit in each crate (or re-run with --commit)"
 fi
