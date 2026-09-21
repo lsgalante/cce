@@ -24,8 +24,10 @@ of them before reading the guide does damage that is annoying to undo:
   changes inside the relevant crate — the root repo tracks only the workspace
   files listed above, and its `.gitignore` keeps every crate out. Remember that
   **committing is not publishing** —
-  `origin` is a pushable bare repo under `~/git/`, and gitsite mirrors from
-  there, so an unpushed commit is not on the site.
+  every crate's `origin` is GitHub (`github.com/lsgalante/<crate>`), and a
+  post-commit hook pushes each commit there; git.lucas.co is only an hourly
+  mirror of GitHub. A commit that did not push (hook missing, network down)
+  is on no remote at all.
 - **`ccebuild` is the build/install entry point** (`ccebuild install`,
   `restart`, `status`, `prune`). Do not hand-roll a loop over the crates, and
   never add a binary name to a Makefile — `cargo metadata` already knows it, and

@@ -2,7 +2,7 @@
 # Bump the pinned revs that let a single crate be installed on its own.
 #
 # Each app declares its workspace-internal dependencies as git dependencies on
-# git.lucas.co, pinned to an exact rev, while the workspace root patches those
+# GitHub (the crates' origin), pinned to an exact rev, while the workspace root patches those
 # sources back to the local crates. That split is what lets one app be cloned
 # and built alone -- and it is also exactly why the pins rot silently: inside
 # this workspace the [patch] block always wins, so a stale rev never fails a
@@ -25,9 +25,9 @@
 # An origin ahead of the work tree is fine and is pinned as-is -- it is what
 # others can actually fetch.
 #
-# The pins themselves name git.lucas.co, which mirrors GitHub hourly, so a rev
-# pinned immediately after a push is correct but not yet fetchable from the
-# site. That resolves itself and is not an error.
+# The pins name GitHub directly (since 2026-09-21; before that git.lucas.co,
+# which only mirrors GitHub hourly, so a fresh pin was unfetchable for up to an
+# hour), so a rev pinned right after a push resolves at once.
 #
 # A manifest that should have changed but did not fails the run. Silently
 # skipping is what let 21 repos sit unpushed for a day; the same rule applies
@@ -63,7 +63,7 @@ say() { printf '%s\n' "$*"; }
 pins() {
     for m in "$ROOT"/*/Cargo.toml; do
         crate=$(basename "$(dirname "$m")")
-        sed -n 's|^\([a-z0-9-]*\) = { git = "https://git\.lucas\.co/\1\.git", rev = "\([0-9a-f]\{40\}\)" }$|'"$crate"' \1 \2|p' "$m"
+        sed -n 's|^\([a-z0-9-]*\) = { git = "https://github\.com/lsgalante/\1\.git", rev = "\([0-9a-f]\{40\}\)" }$|'"$crate"' \1 \2|p' "$m"
     done
 }
 
@@ -151,7 +151,7 @@ for t in $TARGETS; do
                 m="$ROOT/$crate/Cargo.toml"
                 say "    $crate"
                 if [ -z "$DRY" ]; then
-                    sed -i "s|^$dep = { git = \"https://git.lucas.co/$dep.git\", rev = \"$old\" }$|$dep = { git = \"https://git.lucas.co/$dep.git\", rev = \"$new\" }|" "$m"
+                    sed -i "s|^$dep = { git = \"https://github.com/lsgalante/$dep.git\", rev = \"$old\" }$|$dep = { git = \"https://github.com/lsgalante/$dep.git\", rev = \"$new\" }|" "$m"
                     grep -q "rev = \"$new\"" "$m" || {
                         say "!! $crate: manifest did not change -- pin format drifted?"; exit 1; }
                 else

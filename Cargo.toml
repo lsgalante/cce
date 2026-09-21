@@ -34,15 +34,20 @@ members = [
 ]
 
 # Every app declares cce-ui (and cce-compositor also cce-window-manager) as a git
-# dependency so a standalone clone of one app resolves without sibling
-# checkouts -- that is what makes a single app installable on its own. Inside
-# this workspace those git sources are redirected back to the local crates, so
+# dependency on GitHub -- the crates' origin, the one place a push lands -- so a
+# standalone clone of one app resolves without sibling checkouts; that is what
+# makes a single app installable on its own. (Until 2026-09-21 the pins named
+# git.lucas.co, which is only an hourly mirror of GitHub now: a rev pinned right
+# after a push was not fetchable from there for up to an hour.) Inside this
+# workspace those git sources are redirected back to the local crates, so
 # workspace builds compile the working tree and cross-crate edits stay live.
 # The pinned revs only affect builds that happen outside this workspace, which
 # means they can go stale without any build here failing: after pushing cce-ui
-# or cce-window-manager, bump the rev in the crates that depend on them.
-[patch."https://git.lucas.co/cce-ui.git"]
+# or cce-window-manager, run ./bump-revs.sh to repin the crates that depend on
+# them. The patch keys must match the pins' URL exactly, or the patch is unused
+# and every crate silently builds a fetched copy of the toolkit.
+[patch."https://github.com/lsgalante/cce-ui.git"]
 cce-ui = { path = "cce-ui" }
 
-[patch."https://git.lucas.co/cce-window-manager.git"]
+[patch."https://github.com/lsgalante/cce-window-manager.git"]
 cce-window-manager = { path = "cce-window-manager" }
