@@ -1423,6 +1423,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "cce-shortcuts-portal"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "log",
+ "serde",
+ "tokio",
+ "zbus 5.18.0",
+]
+
+[[package]]
 name = "cce-status-interface"
 version = "0.1.0"
 dependencies = [

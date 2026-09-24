@@ -31,6 +31,7 @@ members = [
     "cce-list",
     "cce-window-manager",
     "cce-lock",
+    "cce-shortcuts-portal",
 ]
 
 # Every app declares cce-ui (and cce-compositor also cce-window-manager) as a git
