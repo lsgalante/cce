@@ -14,8 +14,9 @@ the `[patch]` block), `Cargo.lock`, `.cargo/config.toml` and this file. Its
 `.gitignore` excludes every subdirectory by glob, so no crate can be swallowed
 as an embedded repo and adding a crate needs no change here. It also holds
 `bump-revs.sh`: after pushing a shared crate, run it to repoint the git pins in
-the crates that depend on it, because a stale pin never fails a build here --
-only a standalone build elsewhere.
+the crates that depend on it (and re-resolve each one's committed Cargo.lock to
+match), because a stale pin never fails a build here -- only a standalone build
+elsewhere.
 
 Three rules are repeated here, and only these three, because acting against any
 of them before reading the guide does damage that is annoying to undo:
