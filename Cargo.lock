@@ -1454,6 +1454,7 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "wayland-client",
+ "x11rb",
  "xkeysym",
  "zbus 4.4.0",
 ]
