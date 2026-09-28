@@ -1534,7 +1534,6 @@ dependencies = [
  "serde",
  "serde_json",
  "smithay-client-toolkit",
- "tokio",
  "wayland-backend",
  "wayland-client",
  "wayland-protocols 0.31.2",
