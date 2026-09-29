@@ -2,7 +2,6 @@
 resolver = "2"
 members = [
     "cce-ui",
-    "cce-layout-interface",
     "cce-screenaver",
     "cce-authenticator",
     "cce-fonts",
