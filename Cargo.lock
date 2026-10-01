@@ -1279,12 +1279,7 @@ dependencies = [
  "cce-vault",
  "chrono",
  "env_logger",
- "keyring",
  "log",
- "reqwest",
- "roxmltree 0.20.0",
- "serde",
- "serde_json",
  "wayland-client",
 ]
 
