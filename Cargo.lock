@@ -1260,11 +1260,13 @@ version = "0.1.0"
 dependencies = [
  "calloop",
  "cce-ui",
+ "cce-vault",
  "env_logger",
  "image",
  "log",
  "serde",
  "serde_json",
+ "tempfile",
  "wayland-client",
 ]
 
@@ -1527,6 +1529,7 @@ dependencies = [
  "bytemuck",
  "calloop",
  "calloop-wayland-source",
+ "cce-vault",
  "cosmic-text",
  "glam",
  "gpu-allocator",
