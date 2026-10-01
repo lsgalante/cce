@@ -44,6 +44,15 @@
 # update, the one a standalone build would make, moving nothing from
 # crates.io that the new pin does not require. A crate whose lock does not
 # resolve fails the run before anything is committed.
+#
+# A PIN MAY CARRY EXTRA KEYS AFTER `rev` (features, optional, ...); the bump
+# rewrites the rev alone and keeps them. Until 2026-10-01 the pattern demanded
+# nothing after the rev, so cce-notes' and cce-grid's `features = [...]` pins
+# of cce-ui and cce-ui's `optional = true` pin of cce-vault were invisible:
+# not bumped, not reported, because the drift check only looked at manifests
+# the pattern had already matched. Now every `git = "https://github.com/
+# lsgalante/..."` line the pattern does not match is reported, and one naming
+# a dependency being bumped fails the run before anything is written.
 
 set -eu
 
@@ -56,7 +65,7 @@ for arg in "$@"; do
     case "$arg" in
         --dry-run) DRY=1 ;;
         --commit)  COMMIT=1 ;;
-        -h|--help) sed -n '2,47p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help) sed -n '2,/^$/p' "$0" | sed '/^$/d; s/^# \{0,1\}//'; exit 0 ;;
         -*) echo "unknown option: $arg" >&2; exit 2 ;;
         *)  WANT="$WANT $arg" ;;
     esac
@@ -68,19 +77,39 @@ grep -q '^\[workspace\]' "$ROOT/Cargo.toml" || {
 
 say() { printf '%s\n' "$*"; }
 
-# Every git pin in the workspace, as "crate dep rev". The manifests are written
-# by this script and by hand in one uniform shape, so one pattern covers them;
-# a line that drifts out of that shape stops matching and is reported below as
-# a manifest that did not change, rather than being quietly left behind.
+# Every git pin in the workspace, as "crate dep rev". A pin is
+#   dep = { git = "https://github.com/lsgalante/dep.git", rev = "<sha>"[, more] }
+# -- the git URL and rev first, then any other keys (features, optional, ...),
+# which the bump leaves exactly as they are.
+PIN_RE='^\([a-z0-9-]*\) = { git = "https://github\.com/lsgalante/\1\.git", rev = "\([0-9a-f]\{40\}\)"\(, [^}]*\)\{0,1\} }$'
 pins() {
     for m in "$ROOT"/*/Cargo.toml; do
         crate=$(basename "$(dirname "$m")")
-        sed -n 's|^\([a-z0-9-]*\) = { git = "https://github\.com/lsgalante/\1\.git", rev = "\([0-9a-f]\{40\}\)" }$|'"$crate"' \1 \2|p' "$m"
+        sed -n "s|$PIN_RE|$crate \\1 \\2|p" "$m"
+    done
+}
+
+# Every line that points a dependency at one of our GitHub repos but is not a
+# pin in the shape above, as "crate:line: text". These are what used to vanish
+# silently -- a pin the pattern cannot see is a pin nobody bumps.
+strays() {
+    for m in "$ROOT"/*/Cargo.toml; do
+        crate=$(basename "$(dirname "$m")")
+        grep -n 'git = "https://github\.com/lsgalante/' "$m" \
+            | grep -v '^[0-9]*:[[:space:]]*#' \
+            | grep -v "^[0-9]*:$(printf '%s' "$PIN_RE" | sed 's/^\^//')" \
+            | sed "s|^|$crate:|"
     done
 }
 
 ALL_PINS=$(pins)
-[ -n "$ALL_PINS" ] || { say "no git pins found under $ROOT"; exit 0; }
+STRAYS=$(strays)
+if [ -n "$STRAYS" ]; then
+    say "!! not in pin shape -- this script cannot see or bump these:"
+    printf '%s\n' "$STRAYS" | sed 's/^/     /'
+    say "   put each in the shape above (extra keys after rev are fine)"
+fi
+[ -n "$ALL_PINS" ] || [ -n "$STRAYS" ] || { say "no git pins found under $ROOT"; exit 0; }
 
 DEPS=$(printf '%s\n' "$ALL_PINS" | awk '{print $2}' | sort -u)
 if [ -n "$WANT" ]; then
@@ -89,6 +118,26 @@ if [ -n "$WANT" ]; then
             echo "$w is not pinned by any crate here" >&2; exit 1; }
     done
     DEPS=$(printf '%s' "$WANT" | tr ' ' '\n' | sed '/^$/d')
+fi
+
+# A stray naming a dependency this run bumps is a dependent that would be
+# left behind, so it stops the run; with no dependency named, every one of
+# our repos counts. Strays naming other dependencies were reported above.
+if [ -n "$STRAYS" ]; then
+    if [ -n "$WANT" ]; then
+        hit=""
+        for dep in $DEPS; do
+            printf '%s\n' "$STRAYS" | grep -q "lsgalante/$dep\(\.git\)\{0,1\}\"" && hit="$hit $dep"
+        done
+    else
+        hit=" every dependency"
+    fi
+    if [ -n "$hit" ]; then
+        say ""
+        say "blocked: a pin above is out of shape, bumping$hit would leave it behind"
+        say "-- nothing written"
+        exit 1
+    fi
 fi
 
 [ -n "$DRY" ] && say "DRY RUN -- nothing will be written"
@@ -163,8 +212,10 @@ for t in $TARGETS; do
                 m="$ROOT/$crate/Cargo.toml"
                 say "    $crate"
                 if [ -z "$DRY" ]; then
-                    sed -i "s|^$dep = { git = \"https://github.com/lsgalante/$dep.git\", rev = \"$old\" }$|$dep = { git = \"https://github.com/lsgalante/$dep.git\", rev = \"$new\" }|" "$m"
-                    grep -q "rev = \"$new\"" "$m" || {
+                    # The rev alone is rewritten; keys after it are kept.
+                    head="$dep = { git = \"https://github\\.com/lsgalante/$dep\\.git\", rev = \""
+                    sed -i "s|^\($head\)$old\"|\1$new\"|" "$m"
+                    grep -q "^$head$new\"" "$m" || {
                         say "!! $crate: manifest did not change -- pin format drifted?"; exit 1; }
                 else
                     printf '    would: %s %s -> %s\n' "$crate" "$(printf '%.8s' "$old")" "$(printf '%.8s' "$new")"
