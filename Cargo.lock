@@ -1274,6 +1274,7 @@ version = "0.1.0"
 dependencies = [
  "calloop",
  "cce-ui",
+ "cce-vault",
  "chrono",
  "env_logger",
  "keyring",
