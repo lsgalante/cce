@@ -32,6 +32,7 @@ members = [
     "cce-lock",
     "cce-shortcuts-portal",
     "cce-vault",
+    "cce-notes",
 ]
 
 # Every app declares cce-ui (and cce-compositor also cce-window-manager) as a git
@@ -45,10 +46,13 @@ members = [
 # The pinned revs only affect builds that happen outside this workspace, which
 # means they can go stale without any build here failing: after pushing cce-ui
 # or cce-window-manager, run ./bump-revs.sh to repin the crates that depend on
-# them. The patch keys must match the pins' URL exactly, or the patch is unused
+# them (cce-vault too, pinned by cce-notes). The patch keys must match the pins' URL exactly, or the patch is unused
 # and every crate silently builds a fetched copy of the toolkit.
 [patch."https://github.com/lsgalante/cce-ui.git"]
 cce-ui = { path = "cce-ui" }
 
 [patch."https://github.com/lsgalante/cce-window-manager.git"]
 cce-window-manager = { path = "cce-window-manager" }
+
+[patch."https://github.com/lsgalante/cce-vault.git"]
+cce-vault = { path = "cce-vault" }

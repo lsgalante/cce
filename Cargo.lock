@@ -1340,6 +1340,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "cce-notes"
+version = "0.1.0"
+dependencies = [
+ "calloop",
+ "cce-ui",
+ "cce-vault",
+ "chrono",
+ "env_logger",
+ "log",
+ "wayland-client",
+]
+
+[[package]]
 name = "cce-notifier"
 version = "0.1.0"
 dependencies = [
