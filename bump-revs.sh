@@ -53,6 +53,14 @@
 # the pattern had already matched. Now every `git = "https://github.com/
 # lsgalante/..."` line the pattern does not match is reported, and one naming
 # a dependency being bumped fails the run before anything is written.
+#
+# A REPIN TOUCHES ONLY THE REPIN. A crate whose Cargo.toml or Cargo.lock
+# already has uncommitted changes blocks the run before anything is written,
+# and --commit commits exactly those two paths, leaving anything else staged
+# where it was. Until 2026-10-01 it ran `git add` then a bare `git commit`, so
+# whatever another session had staged, or half-edited in the manifest, went
+# out in the "Repin" commit and was pushed with it. A commit that fails now
+# fails the run.
 
 set -eu
 
@@ -76,6 +84,12 @@ grep -q '^\[workspace\]' "$ROOT/Cargo.toml" || {
     echo "$ROOT/Cargo.toml is not a workspace root" >&2; exit 1; }
 
 say() { printf '%s\n' "$*"; }
+
+# Scratch space for the whole run, removed however the run ends -- an early
+# `exit 1` included, which used to leave a predictable /tmp/bump-revs.$$
+# behind.
+SCRATCH=$(mktemp -d)
+trap 'rm -rf "$SCRATCH"' EXIT
 
 # Every git pin in the workspace, as "crate dep rev". A pin is
 #   dep = { git = "https://github.com/lsgalante/dep.git", rev = "<sha>"[, more] }
@@ -149,7 +163,8 @@ TARGETS=""
 BLOCKED=""
 for dep in $DEPS; do
     wt="$ROOT/$dep"
-    [ -d "$wt/.git" ] || { say "!! $dep: no work tree at $wt"; BLOCKED="$BLOCKED $dep"; continue; }
+    # -e, not -d: a checkout made with `git worktree add` has a .git FILE.
+    [ -e "$wt/.git" ] || { say "!! $dep: no work tree at $wt"; BLOCKED="$BLOCKED $dep"; continue; }
     branch=$(git -C "$wt" symbolic-ref --quiet --short HEAD) || {
         say "!! $dep: detached HEAD -- check out its branch first"; BLOCKED="$BLOCKED $dep"; continue; }
     url=$(git -C "$wt" remote get-url origin 2>/dev/null) || {
@@ -186,8 +201,38 @@ done
 if [ -n "$BLOCKED" ]; then
     say ""
     say "blocked:$BLOCKED -- nothing written"
-    say "name the other dependencies explicitly to bump them anyway, e.g."
-    say "    $(basename "$0")$(printf '%s\n' "$DEPS" | grep -vx "$(printf '%s' "$BLOCKED" | tr -d ' ')" | tr '\n' ' ' | sed 's/ $//' | sed 's/^/ /')"
+    # One blocked name per line: grep reads each line as its own pattern.
+    # (`tr -d ' '` used to glue two blocked names into one pattern that
+    # matched nothing, so the hint suggested re-running with them included.)
+    rest=$(printf '%s\n' "$DEPS" \
+        | grep -vxF "$(printf '%s' "$BLOCKED" | tr ' ' '\n' | sed '/^$/d')" \
+        | tr '\n' ' ' | sed 's/ $//')
+    if [ -n "$rest" ]; then
+        say "name the other dependencies explicitly to bump them anyway, e.g."
+        say "    $(basename "$0") $rest"
+    fi
+    exit 1
+fi
+
+# A crate this run would repin must not already have uncommitted changes in
+# its manifest or lock: the repin would be committed on top of them -- often
+# another session's work in progress -- and pushed with it, and the lock
+# refresh would resolve against them too. Checked before anything is written.
+DIRTY=""
+for t in $TARGETS; do
+    dep=${t%%=*}
+    new=${t#*=}
+    for crate in $(printf '%s\n' "$ALL_PINS" | awk -v d="$dep" -v n="$new" '$2 == d && $3 != n { print $1 }'); do
+        case " $DIRTY " in *" $crate "*) continue ;; esac
+        if [ -n "$(git -C "$ROOT/$crate" status --porcelain --untracked-files=no -- Cargo.toml Cargo.lock 2>&1)" ]; then
+            say "!! $crate: Cargo.toml or Cargo.lock has uncommitted changes -- commit or stash them first"
+            DIRTY="$DIRTY $crate"
+        fi
+    done
+done
+if [ -n "$DIRTY" ]; then
+    say ""
+    say "blocked: would repin on top of uncommitted changes in$DIRTY -- nothing written"
     exit 1
 fi
 
@@ -203,7 +248,7 @@ for t in $TARGETS; do
         [ "$d" = "$dep" ] || continue
         [ "$old" = "$new" ] && { echo "SAME $crate"; continue; }
         echo "EDIT $crate $old"
-    done > "${TMPDIR:-/tmp}/bump-revs.$$"
+    done > "$SCRATCH/plan"
 
     while read -r verb crate old; do
         case "$verb" in
@@ -223,8 +268,7 @@ for t in $TARGETS; do
                 CHANGED="$CHANGED $crate"
                 ;;
         esac
-    done < "${TMPDIR:-/tmp}/bump-revs.$$"
-    rm -f "${TMPDIR:-/tmp}/bump-revs.$$"
+    done < "$SCRATCH/plan"
 done
 
 CHANGED=$(printf '%s' "$CHANGED" | tr ' ' '\n' | sed '/^$/d' | sort -u)
@@ -240,10 +284,10 @@ lock_tracked() {
 # standalone clone would: the committed tree plus the work tree's manifest and
 # lock, in a directory outside the workspace (inside it cargo would find the
 # root and ignore this lock entirely).
-WORK=""
+WORK="$SCRATCH/locks"
 refresh_lock() {
     crate=$1
-    [ -n "$WORK" ] || { WORK=$(mktemp -d); trap 'rm -rf "$WORK"' EXIT; }
+    mkdir -p "$WORK"
     case "$WORK" in "$ROOT"/*)
         say "!! temp dir $WORK is inside the workspace -- set TMPDIR elsewhere"; return 1 ;;
     esac
@@ -291,25 +335,47 @@ if [ "$COUNT" = 0 ]; then
     say "every pin already current ($UNCHANGED) -- nothing to do"
     exit 0
 fi
-if [ "$UNCHANGED" -gt 0 ]; then
-    say "$COUNT crate(s) repinned, $UNCHANGED already current"
+if [ -n "$DRY" ]; then
+    repinned="would be repinned"
 else
-    say "$COUNT crate(s) repinned"
+    repinned="repinned"
+fi
+if [ "$UNCHANGED" -gt 0 ]; then
+    say "$COUNT crate(s) $repinned, $UNCHANGED already current"
+else
+    say "$COUNT crate(s) $repinned"
 fi
 
-if [ -n "$COMMIT" ] && [ -z "$DRY" ]; then
+if [ -n "$DRY" ]; then
+    say "re-run without --dry-run to write them"
+elif [ -n "$COMMIT" ]; then
     say ""
     say "committing:"
+    FAILED=""
     for crate in $CHANGED; do
         files="Cargo.toml"
         lock_tracked "$crate" && files="$files Cargo.lock"
-        ( cd "$ROOT/$crate" && git add $files && git commit --quiet -m "Repin workspace dependencies to their published revs
+        # The paths after `--` are the whole commit: anything else already
+        # staged in the crate stays staged and out of it. A failure is
+        # counted, not swallowed -- `( ... ) && say` here once let a failed
+        # commit pass under set -e and still print "committed".
+        if git -C "$ROOT/$crate" commit --quiet -m "Repin workspace dependencies to their published revs
 
 The pinned revs only affect builds outside this workspace, where an app is
 cloned on its own, so a stale pin never fails a build here. Bumped by
 bump-revs.sh after the dependency was pushed; Cargo.lock (when committed)
-is re-resolved to match." ) && say "    $crate"
+is re-resolved to match." -- $files; then
+            say "    $crate"
+        else
+            say "!! $crate: commit failed"
+            FAILED="$FAILED $crate"
+        fi
     done
+    if [ -n "$FAILED" ]; then
+        say ""
+        say "not committed:$FAILED -- their manifests are edited in place; commit them by hand"
+        exit 1
+    fi
     say ""
     say "committed -- each crate's post-commit hook pushes it to origin (GitHub);"
     say "a crate without the hook still needs: git -C <crate> push origin <branch>"
