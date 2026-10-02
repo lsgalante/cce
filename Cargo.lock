@@ -1351,6 +1351,7 @@ dependencies = [
  "env_logger",
  "image",
  "log",
+ "percent-encoding",
  "resvg 0.41.0",
  "serde_json",
  "tempfile",
