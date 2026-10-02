@@ -1223,6 +1223,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "xkbcommon",
+ "zbus 5.18.0",
 ]
 
 [[package]]
