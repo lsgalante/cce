@@ -1585,6 +1585,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "cce-weather"
+version = "0.1.0"
+dependencies = [
+ "calloop",
+ "cce-ui",
+ "chrono",
+ "env_logger",
+ "kdl 4.7.1",
+ "log",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "wayland-client",
+]
+
+[[package]]
 name = "cce-window-manager"
 version = "0.1.0"
 dependencies = [
