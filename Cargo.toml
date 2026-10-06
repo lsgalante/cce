@@ -58,3 +58,12 @@ cce-window-manager = { path = "cce-window-manager" }
 
 [patch."https://github.com/lsgalante/cce-vault.git"]
 cce-vault = { path = "cce-vault" }
+
+# A member's own [profile] is ignored in a workspace build (only the root's
+# applies), so cce-compositor's `[profile.release] debug = true` never reached
+# the installed cce-fx: it shipped with no debug info, and a crash backtrace
+# had no file:line. Line tables are enough for that, cost a fraction of full
+# debug info, and are not loaded into memory. Scoped to cce-fx so no other
+# crate rebuilds.
+[profile.release.package.cce-fx]
+debug = "line-tables-only"
