@@ -31,6 +31,7 @@ members = [
     "cce-window-manager",
     "cce-lock",
     "cce-shortcuts-portal",
+    "cce-desktop-portal",
     "cce-vault",
     "cce-notes",
     "cce-keyboard",
