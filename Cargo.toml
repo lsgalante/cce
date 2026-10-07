@@ -36,6 +36,7 @@ members = [
     "cce-keyboard",
     "cce-weather",
     "cce-model",
+    "cce-mesh-io",
 ]
 
 # Every app declares cce-ui (and cce-compositor also cce-window-manager) as a git
@@ -59,6 +60,9 @@ cce-window-manager = { path = "cce-window-manager" }
 
 [patch."https://github.com/lsgalante/cce-vault.git"]
 cce-vault = { path = "cce-vault" }
+
+[patch."https://github.com/lsgalante/cce-mesh-io.git"]
+cce-mesh-io = { path = "cce-mesh-io" }
 
 # A member's own [profile] is ignored in a workspace build (only the root's
 # applies), so cce-compositor's `[profile.release] debug = true` never reached
