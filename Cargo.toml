@@ -35,6 +35,7 @@ members = [
     "cce-notes",
     "cce-keyboard",
     "cce-weather",
+    "cce-model",
 ]
 
 # Every app declares cce-ui (and cce-compositor also cce-window-manager) as a git
