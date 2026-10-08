@@ -1537,6 +1537,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cce-relief"
+version = "0.1.0"
+dependencies = [
+ "cce-ui",
+ "kdl 4.7.1",
+ "serde_json",
+]
+
+[[package]]
 name = "cce-remote"
 version = "0.1.0"
 dependencies = [
