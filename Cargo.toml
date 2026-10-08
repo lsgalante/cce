@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "cce-ui",
+    "cce-core",
     "cce-screenaver",
     "cce-authenticator",
     "cce-fonts",
@@ -55,6 +56,9 @@ members = [
 # and every crate silently builds a fetched copy of the toolkit.
 [patch."https://github.com/lsgalante/cce-ui.git"]
 cce-ui = { path = "cce-ui" }
+
+[patch."https://github.com/lsgalante/cce-core.git"]
+cce-core = { path = "cce-core" }
 
 [patch."https://github.com/lsgalante/cce-window-manager.git"]
 cce-window-manager = { path = "cce-window-manager" }

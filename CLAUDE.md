@@ -37,5 +37,5 @@ of them before reading the guide does damage that is annoying to undo:
   builds and installs to your crate (`cargo build -p <crate>`,
   `ccebuild install <crate>` — never bare `install` or `restart`, which deploy
   and restart *other sessions'* work too), and read the "Concurrent sessions"
-  section of the guide before editing shared crates (`cce-ui`,
+  section of the guide before editing shared crates (`cce-ui`, `cce-core`,
   `cce-window-manager`, `cce-icons`) or driving the live session.

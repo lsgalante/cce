@@ -1049,6 +1049,7 @@ version = "0.1.0"
 dependencies = [
  "bindgen 0.72.1",
  "calloop",
+ "cce-core",
  "cce-ui",
  "dpi",
  "env_logger",
@@ -1110,8 +1111,18 @@ version = "0.1.0"
 dependencies = [
  "calloop",
  "cce-ui",
- "tokio",
  "wayland-client",
+]
+
+[[package]]
+name = "cce-core"
+version = "0.1.0"
+dependencies = [
+ "kdl 4.7.1",
+ "libc",
+ "log",
+ "serde_json",
+ "web-time",
 ]
 
 [[package]]
@@ -1150,6 +1161,20 @@ dependencies = [
  "toml 0.8.23",
  "wayland-client",
  "xkeysym",
+]
+
+[[package]]
+name = "cce-desktop-portal"
+version = "0.1.0"
+dependencies = [
+ "env_logger",
+ "futures-util",
+ "inotify",
+ "kdl 4.7.1",
+ "log",
+ "serde_json",
+ "tokio",
+ "zbus 5.18.0",
 ]
 
 [[package]]
@@ -1195,7 +1220,7 @@ dependencies = [
  "calloop-wayland-source",
  "cce-ui",
  "smithay-client-toolkit",
- "tokio",
+ "ttf-parser 0.20.0",
  "wayland-client",
  "xkeysym",
 ]
@@ -1207,7 +1232,7 @@ dependencies = [
  "bindgen 0.69.5",
  "bitflags 2.13.1",
  "cc",
- "cce-ui",
+ "cce-core",
  "cce-window-manager",
  "clap",
  "env_logger",
@@ -1353,6 +1378,28 @@ dependencies = [
  "log",
  "reqwest",
  "wayland-client",
+]
+
+[[package]]
+name = "cce-mesh-io"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "glam",
+ "gltf",
+ "image",
+ "log",
+]
+
+[[package]]
+name = "cce-model"
+version = "0.1.0"
+dependencies = [
+ "cce-mesh-io",
+ "cce-ui",
+ "env_logger",
+ "glam",
+ "log",
 ]
 
 [[package]]
@@ -1529,7 +1576,6 @@ dependencies = [
  "serde",
  "serde_json",
  "smithay-client-toolkit",
- "tokio",
  "wayland-client",
  "xkeysym",
 ]
@@ -1543,6 +1589,7 @@ dependencies = [
  "bytemuck",
  "calloop",
  "calloop-wayland-source",
+ "cce-core",
  "cce-vault",
  "cosmic-text",
  "cursor-icon",
@@ -1614,6 +1661,7 @@ dependencies = [
 name = "cce-window-manager"
 version = "0.1.0"
 dependencies = [
+ "cce-core",
  "log",
  "serde",
  "serde_json",
@@ -3401,6 +3449,42 @@ dependencies = [
 ]
 
 [[package]]
+name = "gltf"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3ce1918195723ce6ac74e80542c5a96a40c2b26162c1957a5cd70799b8cacf7"
+dependencies = [
+ "byteorder",
+ "gltf-json",
+ "lazy_static",
+ "serde_json",
+]
+
+[[package]]
+name = "gltf-derive"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "14070e711538afba5d6c807edb74bcb84e5dbb9211a3bf5dea0dfab5b24f4c51"
+dependencies = [
+ "inflections",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "gltf-json"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6176f9d60a7eab0a877e8e96548605dedbde9190a7ae1e80bbcc1c9af03ab14"
+dependencies = [
+ "gltf-derive",
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
+
+[[package]]
 name = "gpu-allocator"
 version = "0.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4494,6 +4578,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "inflections"
+version = "1.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a257582fdcde896fd96463bf2d40eefea0580021c0712a0e2b028b60b47a837a"
+
+[[package]]
 name = "inherent"
 version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4511,8 +4601,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "153be1941a183ec9ccd095ddbe17a8b8d435ef6c76e9e02451b933c3999af2c8"
 dependencies = [
  "bitflags 2.13.1",
+ "futures-util",
  "inotify-sys",
  "libc",
+ "tokio",
 ]
 
 [[package]]
