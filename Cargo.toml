@@ -41,6 +41,7 @@ members = [
     "cce-model",
     "cce-mesh-io",
     "cce-relief",
+    "cce-sheets",
 ]
 
 # Every app declares cce-ui (and cce-compositor also cce-window-manager) as a git
