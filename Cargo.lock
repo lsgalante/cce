@@ -1288,6 +1288,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "cce-documents"
+version = "0.1.0"
+dependencies = [
+ "calloop",
+ "cce-ui",
+ "env_logger",
+ "image",
+ "log",
+ "wayland-client",
+]
+
+[[package]]
 name = "cce-files"
 version = "0.1.0"
 dependencies = [
@@ -1382,6 +1394,18 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
+ "wayland-client",
+]
+
+[[package]]
+name = "cce-image"
+version = "0.1.0"
+dependencies = [
+ "calloop",
+ "cce-ui",
+ "env_logger",
+ "image",
+ "log",
  "wayland-client",
 ]
 
@@ -1522,18 +1546,6 @@ dependencies = [
  "tokio",
  "wayland-client",
  "zbus 5.19.0",
-]
-
-[[package]]
-name = "cce-preview"
-version = "0.1.0"
-dependencies = [
- "calloop",
- "cce-ui",
- "env_logger",
- "image",
- "log",
- "wayland-client",
 ]
 
 [[package]]
