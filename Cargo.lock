@@ -1188,16 +1188,15 @@ dependencies = [
 name = "cce-browser"
 version = "0.1.0"
 dependencies = [
- "bindgen 0.72.1",
  "calloop",
  "cce-core",
  "cce-ui",
+ "cce-wpe",
  "dpi",
  "env_logger",
  "euclid",
  "http 1.4.2",
  "log",
- "pkg-config",
  "reqwest",
  "rustix 0.38.44",
  "rustls",
@@ -1519,17 +1518,16 @@ dependencies = [
 name = "cce-mail"
 version = "0.1.0"
 dependencies = [
- "bindgen 0.72.1",
  "calloop",
  "calloop-wayland-source",
  "cce-ui",
+ "cce-wpe",
  "imap",
  "imap-proto",
  "keyring",
  "lettre",
  "mail-parser",
  "native-tls",
- "pkg-config",
  "reqwest",
  "rustix 0.38.44",
  "serde",
@@ -1856,6 +1854,17 @@ dependencies = [
  "log",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "cce-wpe"
+version = "0.1.0"
+dependencies = [
+ "bindgen 0.72.1",
+ "cce-ui",
+ "log",
+ "pkg-config",
+ "rustix 0.38.44",
 ]
 
 [[package]]
