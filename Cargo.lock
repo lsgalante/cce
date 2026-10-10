@@ -1309,6 +1309,7 @@ dependencies = [
 name = "cce-desktop-portal"
 version = "0.1.0"
 dependencies = [
+ "cce-core",
  "env_logger",
  "futures-util",
  "inotify",
@@ -1557,6 +1558,7 @@ name = "cce-mesh-io"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
+ "cce-core",
  "glam",
  "gltf",
  "image",
@@ -1619,6 +1621,7 @@ dependencies = [
 name = "cce-remote"
 version = "0.1.0"
 dependencies = [
+ "cce-core",
  "jpeg-encoder",
  "memmap2 0.9.11",
  "rustix 0.38.44",
@@ -1678,6 +1681,7 @@ dependencies = [
 name = "cce-shortcuts-portal"
 version = "0.1.0"
 dependencies = [
+ "cce-core",
  "env_logger",
  "log",
  "serde",
@@ -1813,6 +1817,7 @@ dependencies = [
 name = "cce-vault"
 version = "0.1.0"
 dependencies = [
+ "cce-core",
  "chrono",
  "indexmap",
  "kdl 4.7.1",
