@@ -1518,19 +1518,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cce-list"
-version = "0.1.0"
-dependencies = [
- "calloop",
- "cce-ui",
- "cce-vault",
- "chrono",
- "env_logger",
- "log",
- "wayland-client",
-]
-
-[[package]]
 name = "cce-lock"
 version = "0.1.0"
 dependencies = [

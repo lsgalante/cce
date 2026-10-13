@@ -29,7 +29,6 @@ members = [
     "cce-data-editor",
     "cce-remote",
     "cce-secrets",
-    "cce-list",
     "cce-window-manager",
     "cce-lock",
     "cce-shortcuts-portal",
