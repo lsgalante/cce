@@ -46,6 +46,11 @@ members = [
     "cce-vault-web",
     "cce-sync",
 ]
+# Crates that live here but build on their own. cce-sync-server is a
+# Cloudflare Worker (wasm32 only, built by worker-build under wrangler) that
+# pins cce-sync by git rev and keeps its own Cargo.lock, which is the one a
+# deploy uses; without this, cargo refuses to build it from inside this tree.
+exclude = ["cce-sync-server"]
 
 # Every app declares cce-ui (and cce-compositor also cce-window-manager) as a git
 # dependency on GitHub -- the crates' origin, the one place a push lands -- so a
