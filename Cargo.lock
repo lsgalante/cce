@@ -1188,6 +1188,7 @@ dependencies = [
 name = "cce-browser"
 version = "0.1.0"
 dependencies = [
+ "base64 0.22.1",
  "calloop",
  "cce-core",
  "cce-ui",
@@ -1197,6 +1198,7 @@ dependencies = [
  "euclid",
  "http 1.4.2",
  "log",
+ "png 0.17.16",
  "reqwest",
  "rustix 0.38.44",
  "rustls",
@@ -1259,12 +1261,15 @@ name = "cce-core"
 version = "0.1.0"
 dependencies = [
  "fluent-bundle",
+ "indexmap",
  "kdl 4.7.1",
  "libc",
  "log",
+ "pulldown-cmark",
  "serde_json",
  "unic-langid",
  "web-time",
+ "yaml-rust2",
 ]
 
 [[package]]
@@ -1776,7 +1781,6 @@ dependencies = [
  "calloop",
  "calloop-wayland-source",
  "cce-core",
- "cce-vault",
  "chrono",
  "cosmic-text",
  "cursor-icon",
@@ -1821,13 +1825,11 @@ dependencies = [
  "kdl 4.7.1",
  "log",
  "notify",
- "percent-encoding",
  "pulldown-cmark",
  "serde",
  "serde_json",
  "tempfile",
  "walkdir",
- "yaml-rust2",
 ]
 
 [[package]]
