@@ -84,6 +84,12 @@ cce-mesh-io = { path = "cce-mesh-io" }
 [patch."https://github.com/lsgalante/cce-wpe.git"]
 cce-wpe = { path = "cce-wpe" }
 
+# cce-vault-web (the phone app) pins cce-sync by git rev for its standalone
+# build; here it compiles the member. (cce-sync-server, excluded, keeps its
+# own pin and lock.)
+[patch."https://github.com/lsgalante/cce-sync.git"]
+cce-sync = { path = "cce-sync" }
+
 # A member's own [profile] is ignored in a workspace build (only the root's
 # applies), so cce-compositor's `[profile.release] debug = true` never reached
 # the installed cce-fx: it shipped with no debug info, and a crash backtrace
