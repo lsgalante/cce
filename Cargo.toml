@@ -56,7 +56,7 @@ exclude = ["cce-sync-server"]
 # dependency on GitHub -- the crates' origin, the one place a push lands -- so a
 # standalone clone of one app resolves without sibling checkouts; that is what
 # makes a single app installable on its own. (Until 2026-09-21 the pins named
-# git.lucas.co, which is only an hourly mirror of GitHub now: a rev pinned right
+# git.lucas.co, an hourly mirror of GitHub retired 2026-10-14: a rev pinned right
 # after a push was not fetchable from there for up to an hour.) Inside this
 # workspace those git sources are redirected back to the local crates, so
 # workspace builds compile the working tree and cross-crate edits stay live.

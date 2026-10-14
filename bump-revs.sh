@@ -26,7 +26,7 @@
 # others can actually fetch.
 #
 # The pins name GitHub directly (since 2026-09-21; before that git.lucas.co,
-# which only mirrors GitHub hourly, so a fresh pin was unfetchable for up to an
+# which mirrored GitHub hourly until it was retired on 2026-10-14, so a fresh pin was unfetchable for up to an
 # hour), so a rev pinned right after a push resolves at once.
 #
 # A manifest that should have changed but did not fails the run. Silently

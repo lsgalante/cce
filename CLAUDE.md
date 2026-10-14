@@ -28,8 +28,8 @@ of them before reading the guide does damage that is annoying to undo:
   files listed above, and its `.gitignore` keeps every crate out. Remember that
   **committing is not publishing** —
   every crate's `origin` is GitHub (`github.com/lsgalante/<crate>`), and a
-  post-commit hook pushes each commit there; git.lucas.co is only an hourly
-  mirror of GitHub. A commit that did not push (hook missing, network down)
+  post-commit hook pushes each commit there; GitHub is the only place anything
+  is published (the git.lucas.co mirror was retired 2026-10-14). A commit that did not push (hook missing, network down)
   is on no remote at all.
 - **`ccebuild` is the build/install entry point** (`ccebuild install`,
   `restart`, `status`, `prune`). Do not hand-roll a loop over the crates, and
