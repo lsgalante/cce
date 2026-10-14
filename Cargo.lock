@@ -1685,19 +1685,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cce-sheets"
-version = "0.1.0"
-dependencies = [
- "calloop",
- "cce-ui",
- "csv",
- "env_logger",
- "ironcalc",
- "log",
- "serde_json",
-]
-
-[[package]]
 name = "cce-shortcuts-portal"
 version = "0.1.0"
 dependencies = [
@@ -1707,6 +1694,19 @@ dependencies = [
  "serde",
  "tokio",
  "zbus",
+]
+
+[[package]]
+name = "cce-spreadsheet"
+version = "0.1.0"
+dependencies = [
+ "calloop",
+ "cce-ui",
+ "csv",
+ "env_logger",
+ "ironcalc",
+ "log",
+ "serde_json",
 ]
 
 [[package]]
@@ -1743,6 +1743,7 @@ dependencies = [
  "cce-core",
  "cce-vault",
  "chrono",
+ "ironcalc",
  "kdl 4.7.1",
  "keyring",
  "notify",
@@ -1754,6 +1755,7 @@ dependencies = [
  "tungstenite 0.30.0",
  "ureq",
  "walkdir",
+ "zip",
 ]
 
 [[package]]

@@ -40,7 +40,7 @@ members = [
     "cce-model",
     "cce-mesh-io",
     "cce-relief",
-    "cce-sheets",
+    "cce-spreadsheet",
     "cce-wpe",
     "cce-vault-web",
     "cce-sync",
