@@ -10,7 +10,9 @@ the build tooling lives.
 
 This directory **is** now a git repository, but a deliberately narrow one: it
 versions only what ties the crates together — `Cargo.toml` (the member list and
-the `[patch]` block), `Cargo.lock`, `.cargo/config.toml` and this file. Its
+the `[patch]` block), `Cargo.lock`, `.cargo/config.toml` (lld and
+split-debuginfo only; the per-crate `git-fetch-with-cli` configs were removed
+on 2026-10-13 and should stay gone, as the guide explains) and this file. Its
 `.gitignore` excludes every subdirectory by glob, so no crate can be swallowed
 as an embedded repo and adding a crate needs no change here. It also holds
 `bump-revs.sh`: after pushing a shared crate, run it to repoint the git pins in
