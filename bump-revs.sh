@@ -47,7 +47,7 @@
 #
 # A PIN MAY CARRY EXTRA KEYS AFTER `rev` (features, optional, ...); the bump
 # rewrites the rev alone and keeps them. Until 2026-10-01 the pattern demanded
-# nothing after the rev, so cce-notes' and cce-grid's `features = [...]` pins
+# nothing after the rev, so cce-notes' and cce-desktop's (then cce-grid's) `features = [...]` pins
 # of cce-ui and cce-ui's `optional = true` pin of cce-vault were invisible:
 # not bumped, not reported, because the drift check only looked at manifests
 # the pattern had already matched. Now every `git = "https://github.com/

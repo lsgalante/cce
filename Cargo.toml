@@ -19,7 +19,7 @@ members = [
     "cce-notifier",
     "cce-files",
     "cce-graph",
-    "cce-grid",
+    "cce-desktop",
     "cce-map",
     "cce-calendar",
     "cce-documents",

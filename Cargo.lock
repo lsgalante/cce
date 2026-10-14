@@ -1333,6 +1333,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "cce-desktop"
+version = "0.1.0"
+dependencies = [
+ "calloop",
+ "cce-ui",
+ "cce-vault",
+ "env_logger",
+ "image",
+ "log",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "wayland-client",
+]
+
+[[package]]
 name = "cce-desktop-portal"
 version = "0.1.0"
 dependencies = [
@@ -1465,22 +1481,6 @@ dependencies = [
  "tokio",
  "wayland-client",
  "xkeysym",
-]
-
-[[package]]
-name = "cce-grid"
-version = "0.1.0"
-dependencies = [
- "calloop",
- "cce-ui",
- "cce-vault",
- "env_logger",
- "image",
- "log",
- "serde",
- "serde_json",
- "tempfile",
- "wayland-client",
 ]
 
 [[package]]
