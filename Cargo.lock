@@ -1241,20 +1241,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cce-claude"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "calloop",
- "cce-ui",
- "env_logger",
- "log",
- "rfd",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "cce-cloud"
 version = "0.1.0"
 dependencies = [
@@ -1269,6 +1255,20 @@ dependencies = [
  "smithay-client-toolkit",
  "wayland-client",
  "xkeysym",
+]
+
+[[package]]
+name = "cce-code-agent"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "calloop",
+ "cce-ui",
+ "env_logger",
+ "log",
+ "rfd",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

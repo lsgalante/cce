@@ -44,7 +44,7 @@ members = [
     "cce-wpe",
     "cce-vault-web",
     "cce-sync",
-    "cce-claude",
+    "cce-code-agent",
 ]
 # Crates that live here but build on their own. cce-sync-server is a
 # Cloudflare Worker (wasm32 only, built by worker-build under wrangler) that
