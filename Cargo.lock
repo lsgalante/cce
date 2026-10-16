@@ -1761,6 +1761,7 @@ dependencies = [
  "calloop",
  "calloop-wayland-source",
  "cce-ui",
+ "cce-window-manager",
  "env_logger",
  "futures",
  "kdl 4.7.1",
